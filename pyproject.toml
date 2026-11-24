@@ -1,0 +1,32 @@
+[project]
+name = "structure-aware-rag"
+version = "0.1.0"
+description = "PDF Q&A that chunks by document structure and cites the section each answer came from: Docling + Qdrant + Groq."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "docling>=2.152.0",
+    "docling-hierarchical-pdf>=0.2.0",
+    "groq>=1.7.0",
+    "python-dotenv>=1.2.4",
+    "qdrant-client>=1.20.0",
+    "sentence-transformers>=6.3.0",
+]
+
+[project.scripts]
+structure-rag = "structure_aware_rag.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/structure_aware_rag"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
