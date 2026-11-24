@@ -20,11 +20,11 @@ flowchart LR
     end
 ```
 
-## The bug that motivated it
+## Text loss found while building it
 
 Parsing the sample PDF, Docling's layout model labels the last paragraph on page 3 as a `page_footer` (confidence 0.75). Chunkers skip page furniture, so these two facts never reach the index:
 
-> Upon receiving a complaint, the ICC will acknowledge it within 3 working days and initiate an inquiry **within 7 working days**. The inquiry will be completed **within 60** ~~page break~~ days.
+> Upon receiving a complaint, the ICC will acknowledge it within 3 working days and initiate an inquiry **within 7 working days**. The inquiry will be completed **within 60** *[page break]* days.
 
 Nothing fails. The chunk simply starts mid-sentence with "days. Both the complainant...", and no prompt or model can recover text that was never indexed.
 
@@ -32,7 +32,7 @@ Nothing fails. The chunk simply starts mid-sentence with "days. Both the complai
 
 ## Results
 
-40 hand-written questions, each with an evidence phrase that must appear word for word in a retrieved chunk. Retrieval only, no LLM. Reproduce with `uv run python evals/run.py`.
+40 questions written for this document before any scores were seen, each with an evidence phrase that must appear word for word in a retrieved chunk. Retrieval only, no LLM. Reproduce with `uv run python evals/run.py`.
 
 | Strategy | Chunks | hit@1 | hit@3 | hit@5 | MRR | Evidence lost |
 |---|---|---|---|---|---|---|
@@ -46,7 +46,7 @@ What this does and doesn't show:
 - Chunking by structure puts the right passage first more often than fixed windows of a similar size (37 vs 29 of 40).
 - The rescue step is what takes hit@5 from 38 to 40.
 - Embedding the heading path is worth **one** extra question at hit@1. On this document that is within noise. Its clear benefit is citations and filtering.
-- It is one short, well-structured document and the questions were written by the author, so treat the numbers as a comparison on this PDF, not a benchmark.
+- It is one short, well-structured document with a small question set, so treat the numbers as a comparison on this PDF, not a benchmark.
 
 ## What it does
 
